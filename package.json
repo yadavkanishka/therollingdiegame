@@ -1,0 +1,20 @@
+{
+  "name": "therollingdiegame",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "discord.js": "^14.27.0",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "mustache-express": "^1.3.2",
+    "socket.io": "^4.8.4"
+  }
+}
