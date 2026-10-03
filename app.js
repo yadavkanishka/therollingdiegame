@@ -1,5 +1,6 @@
 const express = require('express');
 const mustacheExpress = require('mustache-express');
+const gameRoutes = require('./routes/gameRoutes');
 
 const app = express();
 const PORT = 3000;
@@ -16,6 +17,9 @@ app.use(express.static('public'));
 app.get('/', function(req, res) {
     res.render('public/home');
 });
+
+// Game routes
+app.use(gameRoutes);
 
 // Start server
 app.listen(PORT, function() {
