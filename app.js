@@ -4,6 +4,7 @@ const session = require('express-session');
 
 const gameRoutes = require('./routes/gameRoutes');
 const authRoutes = require('./routes/authRoutes');
+const managerRoutes = require('./routes/managerRoutes');
 
 const app = express();
 const PORT = 3000;
@@ -37,18 +38,8 @@ app.use(authRoutes);
 // Game routes
 app.use(gameRoutes);
 
-// Temporary protected manager route
-app.get('/manager', function(req, res) {
-
-    if (!req.session.userId) {
-
-        return res.redirect('/login');
-
-    }
-
-    res.render('manager/dashboard');
-
-});
+// Manager routes
+app.use(managerRoutes);
 
 // Start server
 app.listen(PORT, function() {

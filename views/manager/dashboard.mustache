@@ -9,9 +9,44 @@
 
     <h1>Manager Dashboard</h1>
 
-    <p>Welcome, manager!</p>
+    <p>Welcome, {{username}}!</p>
 
-    <a href="/logout">Log out</a>
+    <p>
+
+        <a href="/manager/games/add">Add a New Game</a>
+
+    </p>
+
+    <h2>Current Inventory</h2>
+
+    {{#games}}
+
+        <article>
+
+            <h3>{{title}}</h3>
+
+            <p>{{description}}</p>
+
+            <p>Category: {{category}}</p>
+
+            <p>Price: ${{price}}</p>
+
+            <p>Stock: {{stock}}</p>
+
+        </article>
+
+        <hr>
+
+    {{/games}}
+
+    {{^games}}
+
+        <p>No games have been added yet.</p>
+
+    {{/games}}
+
+    <p><a href="/inventory">View Public Inventory</a></p>
+    <p><a href="/logout">Log out</a></p>
 
 </body>
 </html>
