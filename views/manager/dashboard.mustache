@@ -9,6 +9,16 @@
 
     <h1>Manager Dashboard</h1>
 
+    <h2>Discord Bot Activity</h2>
+
+    <p>
+        This section updates automatically when someone uses a Discord bot command.
+    </p>
+
+    <ul id="bot-activity">
+        <li id="no-activity">Waiting for Discord bot activity...</li>
+    </ul>
+
     <p>Welcome, {{username}}!</p>
 
     <p>
@@ -55,6 +65,9 @@
 
     <p><a href="/inventory">View Public Inventory</a></p>
     <p><a href="/logout">Log out</a></p>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/manager-dashboard.js"></script>
 
 </body>
 </html>
