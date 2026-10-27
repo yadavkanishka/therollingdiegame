@@ -4,40 +4,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manager Login - The Rolling Die</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
-    <h1>Manager Login</h1>
+    <!-- Navigation -->
 
-    {{#error}}
-        <p>{{error}}</p>
-    {{/error}}
+    <header>
 
-    <form method="POST" action="/login">
+        <nav>
 
-        <div>
-            <label for="username">Username:</label>
-            <input
-                type="text"
-                id="username"
-                name="username"
-                required
-            >
-        </div>
+            <a href="/" class="logo">🎲 The Rolling Die</a>
 
-        <div>
-            <label for="password">Password:</label>
-            <input
-                type="password"
-                id="password"
-                name="password"
-                required
-            >
-        </div>
+            <div>
 
-        <button type="submit">Log In</button>
+                <a href="/">Home</a>
 
-    </form>
+                <a href="/inventory">Browse Games</a>
 
+            </div>
+
+        </nav>
+
+    </header>
+
+    <!-- Login Section -->
+
+    <main>
+
+        <section class="login-container">
+
+            <h1>Manager Login</h1>
+
+            <p>
+
+                Sign in to manage your board-game inventory.
+
+            </p>
+
+            {{#error}}
+
+                <div class="login-error" role="alert">
+
+                    {{error}}
+
+                </div>
+
+            {{/error}}
+
+            <form method="POST" action="/login">
+
+                <div>
+
+                    <label for="username">Username</label>
+
+                    <input
+
+                        type="text"
+
+                        id="username"
+
+                        name="username"
+
+                        placeholder="Enter your username"
+
+                        autocomplete="username"
+
+                        required
+
+                    >
+
+                </div>
+
+                <div>
+
+                    <label for="password">Password</label>
+
+                    <input
+
+                        type="password"
+
+                        id="password"
+
+                        name="password"
+
+                        placeholder="Enter your password"
+
+                        autocomplete="current-password"
+
+                        required
+
+                    >
+
+                </div>
+
+                <button type="submit">Log In</button>
+
+            </form>
+
+            <p class="login-back">
+
+                <a href="/">← Back to Home</a>
+
+            </p>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+
+    <footer>
+
+        <p>&copy; The Rolling Die — Every game starts with a roll.</p>
+
+    </footer>
 </body>
 </html>

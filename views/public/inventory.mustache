@@ -4,21 +4,129 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Inventory - The Rolling Die</title>
+        <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
-    <h1>The Rolling Die Game Inventory</h1>
+    
 
-    {{#games}}
-        <article>
-            <h2>{{title}}</h2>
-            <p>{{description}}</p>
-            <p>Category: {{category}}</p>
-            <p>Price: ${{price}}</p>
-            <p>Stock: {{stock}}</p>
-        </article>
-        <hr>
-    {{/games}}
+    <!-- Navigation -->
+
+    <header>
+
+        <nav>
+
+            <a href="/" class="logo">🎲 The Rolling Die</a>
+
+            <div>
+
+                <a href="/">Home</a>
+
+                <a href="/inventory">Browse Games</a>
+
+                <a href="/login">Manager Login</a>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+    <!-- Main Content -->
+
+    <main>
+
+        <section class="page-heading">
+
+            <h1>Our Game Collection</h1>
+
+            <p>
+
+                Discover your next favourite board game.
+
+                Explore our collection and find something for your next game night.
+
+            </p>
+
+        </section>
+
+        <!-- Inventory Cards -->
+
+        <section class="game-grid">
+
+            {{#games}}
+
+            <article class="game-card">
+
+                <h2>{{title}}</h2>
+
+                <p>{{description}}</p>
+
+                <p>
+
+                    <span class="game-category">{{category}}</span>
+
+                </p>
+
+                <p class="game-price">${{price}}</p>
+
+                <p class="game-stock">
+
+                    Stock: {{stock}}
+
+                </p>
+
+            </article>
+
+            {{/games}}
+
+        </section>
+
+        <!-- Empty Inventory Message -->
+
+        {{^games}}
+
+        <section class="dashboard-panel">
+
+            <h2>No Games Available</h2>
+
+            <p>
+
+                Our collection is currently empty.
+
+                Please check back later for available games.
+
+            </p>
+
+        </section>
+
+        {{/games}}
+
+        <!-- Return to Homepage -->
+
+        <section>
+
+            <a href="/" class="button button-secondary">
+
+                Back to Home
+
+            </a>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+
+    <footer>
+
+        <p>
+
+            &copy; The Rolling Die — Every game starts with a roll.
+
+        </p>
+
+    </footer>
 
 </body>
 </html>

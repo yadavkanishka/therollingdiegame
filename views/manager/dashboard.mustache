@@ -4,70 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manager Dashboard - The Rolling Die</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+<header>
+    <nav>
+        <a href="/manager" class="logo">🎲 The Rolling Die</a>
+        <div>
+            <a href="/">Home</a>
+            <a href="/inventory">Inventory</a>
+            <a href="/logout">Log out</a>
+        </div>
+    </nav>
+</header>
 
-    <h1>Manager Dashboard</h1>
+<main>
 
-    <h2>Discord Bot Activity</h2>
+    <div class="dashboard-header">
+        <div>
+            <h1>Manager Dashboard</h1>
+            <p>Welcome, {{username}}! Manage your games and monitor Discord activity.</p>
+        </div>
 
-    <p>
-        This section updates automatically when someone uses a Discord bot command.
-    </p>
+        <a href="/manager/games/add" class="button">
+            + Add a New Game
+        </a>
+    </div>
 
-    <ul id="bot-activity">
-        <li id="no-activity">Waiting for Discord bot activity...</li>
-    </ul>
+    <section class="dashboard-panel">
+        <h2>Discord Bot Activity</h2>
 
-    <p>Welcome, {{username}}!</p>
+        <p>
+            This section updates automatically when someone uses a Discord bot command.
+        </p>
 
-    <p>
+        <ul id="bot-activity">
+            <li id="no-activity">Waiting for Discord bot activity...</li>
+        </ul>
+    </section>
 
-        <a href="/manager/games/add">Add a New Game</a>
+    <section class="dashboard-panel">
+        <h2>Current Inventory</h2>
 
-    </p>
+        <div class="game-grid">
+            {{#games}}
+                <article class="game-card">
+                    <h3>{{title}}</h3>
 
-    <h2>Current Inventory</h2>
+                    <p>{{description}}</p>
 
-    {{#games}}
+                    <p>
+                        <span class="game-category">{{category}}</span>
+                    </p>
 
-        <article>
+                    <p class="game-price">${{price}}</p>
 
-            <h3>{{title}}</h3>
+                    <p class="game-stock">Stock: {{stock}}</p>
 
-            <p>{{description}}</p>
+                    <div class="dashboard-actions">
+                        <a href="/manager/games/{{id}}/edit"
+                           class="button button-secondary">
+                            Edit Game
+                        </a>
 
-            <p>Category: {{category}}</p>
+                        <form
+                            method="POST"
+                            action="/manager/games/{{id}}/delete"
+                            onsubmit="return confirm('Are you sure you want to delete this game?');">
 
-            <p>Price: ${{price}}</p>
+                            <button type="submit" class="button-danger">
+                                Delete Game
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            {{/games}}
+        </div>
 
-            <p>Stock: {{stock}}</p>
-            
-            <p><a href="/manager/games/{{id}}/edit">Edit Game</a></p>
-            
-            <form
-                method="POST"
-                action="/manager/games/{{id}}/delete"
-                onsubmit="return confirm('Are you sure you want to delete this game?');">
-                <button type="submit">Delete Game</button>
-            </form>
-        </article>
+        {{^games}}
+            <p>No games have been added yet.</p>
+        {{/games}}
+    </section>
 
-        <hr>
+</main>
 
-    {{/games}}
+<footer>
+    <p>&copy; The Rolling Die — Every game starts with a roll.</p>
+</footer>
 
-    {{^games}}
-
-        <p>No games have been added yet.</p>
-
-    {{/games}}
-
-    <p><a href="/inventory">View Public Inventory</a></p>
-    <p><a href="/logout">Log out</a></p>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/manager-dashboard.js"></script>
-
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/manager-dashboard.js"></script>
 </body>
 </html>
