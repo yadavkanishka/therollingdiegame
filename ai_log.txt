@@ -1,0 +1,1 @@
+dashboard that is not connected can prevent activity from appearing.
