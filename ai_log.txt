@@ -1,1 +1,306 @@
+                        AI USAGE LOG  -  THE ROLLING DIE
+
+Student:        Kanishka Yadav (000924589)
+AI tools used:  Claude (Anthropic)
+
+SUMMARY OF ENTRIES
+------------------
+  1.  Discord bot activity not appearing on the dashboard
+  2.  Manager route protection
+  3.  Game information missing from the inventory page
+  4.  Edited game information not appearing
+  5.  Discord commands and current database information
+  6.  Website design and navigation
+  7.  Testing add, edit, and delete operations
+  8.  Understanding Express sessions
+  9.  Real-time dashboard updates
+  10. Validating game form input
+
+** ENTRY 1  -  Discord bot activity not appearing on the dashboard
+
+AI tool:        Claude
+Files reviewed: app.js, bot/bot.js, public/js/manager-dashboard.js
+
+QUESTION I ASKED
+Although my Discord bot is operating, my manager dashboard is not displaying the commands. How can I determine the location of the connection failure?
+
+AI :-
+Check whether the Socket.IO instance is passed from app.js to bot.js, whether
+the bot emits the correct event name, and whether the dashboard listens for the
+same event. Event names are case-sensitive, and a missing manager session or a
 dashboard that is not connected can prevent activity from appearing.
+
+WHAT I FOUND
+- app.js passes the Socket.IO instance to startBot.
+- The bot emits "botActivity" to the manager room, and the dashboard listens for
+  that same event.
+- The server only allows a Socket.IO connection if the session contains a
+  manager userId, so a failed manager session could block dashboard updates.
+- The event names matched, but reading the code alone did not prove the
+  connection works in a running application.
+
+WHAT I LEARNED
+Real-time communication needs the server and browser to agree on the event name,
+and the dashboard needs an authenticated, active connection to receive updates.
+
+FURTHER VERIFICATION
+Keep the manager dashboard open, run a Discord command, and check the browser
+console and server output if the activity does not appear.
+
+__________________________________________________________________________________
+** ENTRY 2  -  Manager route protection
+AI tool:        Claude
+Files reviewed: middleware/authMiddleware.js, routes/managerRoutes.js
+
+QUESTION I ASKED
+How can I find out if someone who isn't logged in may still use the browser to access the manager pages?
+
+AI :-
+Test manager pages while logged out and confirm protected routes redirect to the
+login page. Authentication middleware should protect both pages and the routes
+that process changes to game records.
+
+WHAT I FOUND
+- requireManager checks whether req.session.userId exists and redirects to
+  /login if it does not.
+- The manager router calls router.use(requireManager) before defining the
+  dashboard, add, edit, and delete routes, so POST routes that modify games are
+  covered too.
+- The middleware is mounted without a path, so it applies to everything that
+  router handles, including unknown URLs.
+
+WHAT I LEARNED
+Hiding a manager link is not enough protection. The server must check
+authentication whenever a protected page is requested or a change is submitted.
+
+FURTHER VERIFICATION
+Test while logged out: the dashboard, add-game page, edit-game page, and the
+game-deletion POST endpoint. Each should give the expected redirect.
+
+----------------------------------------------------------------------------------
+**ENTRY 3  -  Game information missing from the inventory page
+AI tool:        Claude
+Files reviewed: controllers/gameController.js, models/gameModel.js,
+                database/database.js, database/init.js, database/seed.js,
+                views/public/inventory.mustache
+
+QUESTION I ASKED
+On my inventory page, some game information is not showing up as it should. How can I follow the data from SQLite to the Mustache template via the controller?
+
+AI :-
+Follow the data from the database query to the controller and then to the
+template. Check column names, template variable names, database initialization,
+and whether the correct database file is being opened.
+
+WHAT I FOUND
+- getAllGames() retrieves the records, and the controller passes them to the
+  template as "games".
+- The template uses title, description, category, price, and stock, which match
+  the database fields.
+- There is no empty-state message when no games exist.
+- The price is shown without formatting to two decimal places.
+
+WHAT I LEARNED
+Trace a value through the whole MVC structure instead of checking only the HTML.
+Missing information can come from the database, model, controller, or template.
+
+FURTHER VERIFICATION
+Initialize and seed the database as described in the README, then confirm the
+expected records appear and that an empty database is handled sensibly.
+
+-----------------------------------------------------------------------------------
+ENTRY 4  -  Edited game information not appearing
+AI tool:        Claude
+Files reviewed: controllers/managerController.js, models/gameModel.js,
+                views/manager/game-form.mustache, app.js
+
+QUESTION I ASKED
+What should I do if I make changes to a game and they don't show up on the website?
+
+AI :-
+Check form submission parsing, the form action, the order of the model function
+arguments, and the SQL UPDATE statement. Inspect the submitted values and
+confirm the update affected the expected record.
+
+WHAT I FOUND
+- express.urlencoded is registered before the routes, so forms are parsed.
+- The edit controller loads the existing game, validates input, and calls
+  updateGame with the id, title, description, category, price, and stock.
+- The model uses a parameterized UPDATE and also updates updated_at, then the
+  controller redirects to the dashboard.
+- The controller checks that the game exists but does not check whether the
+  update actually changed a row.
+
+WHAT I LEARNED
+A form can appear to submit successfully even when the database operation has
+not been independently verified.
+
+FURTHER VERIFICATION
+Edit an existing game, submit, and confirm the saved values appear on both the
+manager dashboard and the public inventory.
+
+--------------------------------------------------------------------------------
+ENTRY 5  -  Discord commands and current database information
+AI tool:        Claude
+Files reviewed: bot/bot.js, models/gameModel.js, controllers/managerController.js
+
+QUESTION I ASKED
+How can I ensure that the data in my inventory database corresponds with the bot's responses?
+
+AI :-
+Change a game's stock or price in the manager area, then query it through
+Discord. Exact-title matching is a limitation; partial matching would make
+searches more flexible.
+
+WHAT I FOUND
+- The bot calls gameModel.getAllGames() on each command, so it reads the current
+  database rather than a cached copy.
+- It compares the requested title with each stored title, ignoring letter case,
+  so the title must otherwise match exactly. For example, "wingspan asia" would
+  not find a game stored as "Wingspan".
+
+WHAT I LEARNED
+Reading current records prevents stale answers, but the search method also
+affects how useful the bot is to customers.
+
+POSSIBLE IMPROVEMENT
+A partial-title search, handling the case where several games match.
+
+FURTHER VERIFICATION
+Test existing titles, different capitalization, an unknown title, and an updated
+stock quantity, and compare the results with the website. Partial matching
+should only be described as implemented if it is in the final code.
+
+-------------------------------------------------------------------------------
+ENTRY 6  -  Testing add, edit, and delete operations
+AI tool:        Claude
+Files reviewed: controllers/managerController.js, models/gameModel.js,
+                database/schema.sql, views/manager/game-form.mustache
+
+QUESTION I ASKED
+What is a good way to test whether adding, editing, and deleting a game works
+correctly?
+
+AI :-
+Test each operation separately, check the resulting inventory, and verify the
+database holds the expected records. Test invalid input as well as successful
+operations.
+
+WHAT I FOUND
+- The controller has separate add, edit, and delete functions, and the model uses
+  SQLite INSERT, UPDATE, and DELETE statements.
+- Add and edit reject blank titles, descriptions, and categories, and check that
+  price is a non-negative finite number and stock a non-negative integer.
+- The checks price === '' and stock === '' run before the values are converted
+  to numbers. A whitespace-only string passes those checks and Number() turns it
+  into 0, so whitespace-only numeric input may be accepted.
+
+WHAT I LEARNED
+Validation must consider the value actually submitted to the server, not just how
+the form looks. Browser validation alone is not enough because a request can be
+sent without the form.
+
+FURTHER VERIFICATION
+Test valid details, blank required fields, whitespace-only numbers, negative
+prices, fractional stock, and valid edits and deletions, checking the database
+and inventory after each.
+
+---------------------------------------------------------------------------------
+ENTRY 7  -  Understanding Express sessions
+AI tool:        Claude
+Files reviewed: controllers/authController.js, middleware/authMiddleware.js,
+                app.js, routes/authRoutes.js
+
+QUESTION I ASKED
+When a manager switches between pages, how does the session assist the application in identifying them?
+
+AI :-
+Sessions let the server associate later requests with a manager who has logged
+in. Consider session storage, logout behaviour, and extra session security.
+
+WHAT I FOUND
+- After a successful login, the controller stores the user's id and username in
+  req.session, and the middleware checks userId before allowing manager access.
+- The default in-memory session store is used, so sessions do not survive a
+  server restart.
+- Logout destroys the session and redirects to the login page, but the logout
+  route uses GET rather than POST.
+
+WHAT I LEARNED
+How the session connects login with protected routes, and why session handling
+matters for manager-only features.
+
+POSSIBLE IMPROVEMENTS
+Persistent session storage, session regeneration after login, and a POST request
+for logout. These are not implemented unless the code is changed.
+
+FURTHER VERIFICATION
+Test login, access to protected pages, logout, and access after logout in the
+running application.
+
+---------------------------------------------------------------------------------
+ENTRY 8  -  Real-time dashboard updates
+AI tool:        Claude
+Files reviewed: app.js, bot/bot.js, public/js/manager-dashboard.js,
+                views/manager/dashboard.mustache
+
+QUESTION I ASKED
+Why does a dashboard normally need a refresh to show new information, and how can
+Socket.IO update the activity list without reloading the page?
+
+AI :-
+A normal HTTP request-response cycle does not update a page when something
+happens on the server. Socket.IO keeps a connection open so the server can send
+events to the browser. Check that the bot emits the event, the browser listens
+for the same event, and the dashboard is connected when a command is used.
+
+WHAT I FOUND
+- app.js creates the Socket.IO server and passes io to startBot.
+- The bot emits "botActivity" to the manager room after a supported command, and
+  the dashboard adds an activity item without reloading.
+- The dashboard shows the command, game title, status, and timestamp, limited to
+  ten entries.
+- The list lives in the browser only and is lost on reload; it is not stored in
+  a database table.
+
+WHAT I LEARNED
+How an event emitted by the bot can update the dashboard in real time, with the
+browser and server using the same event name.
+
+FURTHER VERIFICATION
+Log in and open the dashboard, run a Discord command, and confirm the activity
+appears without a manual refresh. If not, check the browser console and server
+output.
+
+-----------------------------------------------------------------------------------
+ENTRY 9  -  Validating game form input
+AI tool:        Claude
+Files reviewed: controllers/managerController.js,
+                views/manager/game-form.mustache, database/schema.sql
+
+QUESTION I ASKED
+In order to prevent invalid prices and stock values from being stored even if browser validation is circumvented, what server-side checks should I include?
+
+AI :-
+Validate all submitted values on the server, trim strings first, and consider a
+reusable validation function. Also add field-length limits, database constraints,
+and tests that send invalid requests directly to the server.
+
+WHAT I FOUND
+- The add and edit controllers contain nearly identical validation logic.
+- Title, description, and category are trimmed and checked; price must be finite
+  and non-negative, and stock a non-negative integer.
+- Numeric fields are not trimmed before the empty-string checks, so a
+  whitespace-only value can become 0 and pass.
+- schema.sql defines price as REAL NOT NULL and stock as INTEGER NOT NULL
+  DEFAULT 0, with no CHECK constraints against negative values.
+
+WHAT I LEARNED
+Validation should be applied consistently, and database constraints add another
+layer of protection. A shared validation function would make add and edit easier
+to maintain.
+
+POSSIBLE IMPROVEMENTS
+Extract a validateGame helper, trim numeric strings, add field-length limits, and
+add CHECK constraints, then test invalid submissions directly against the server.
+These are proposals unless implemented and verified in the final project.
